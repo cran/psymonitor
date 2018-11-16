@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Real-Time Monitoring of Bubbles: The S&amp;P 500</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+<style type="text/css">
+  p.abstract{
+    text-align: center;
+    font-weight: bold;
+  }
+  div.abstract{
+    margin: auto;
+    width: 90%;
+  }
+</style>
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Real-Time Monitoring of Bubbles: The S&amp;P 500</h1>
+<h4 class="author"><em>Peter C. B. Phillips</em></h4>
+<address class="author_afil">
+Yale University<br><a class="author_email" href="mailto:#"><a href="mailto:peter.phillips@yale.edu">peter.phillips@yale.edu</a></a>
+</address>
+<h4 class="author"><em>Shuping Shi</em></h4>
+<address class="author_afil">
+Macquarie University<br><a class="author_email" href="mailto:#"><a href="mailto:shuping.shi@mq.edu.au">shuping.shi@mq.edu.au</a></a>
+</address>
+<h4 class="author"><em>Itamar Caspi</em></h4>
+<address class="author_afil">
+Bank of Israel and Bar-Illan University<br><a class="author_email" href="mailto:#"><a href="mailto:caspi.itamar@gmail.com">caspi.itamar@gmail.com</a></a>
+</address>
+<h4 class="date"><em>October, 2018</em></h4>
+<div class="abstract">
+<p class="abstract">Abstract</p>
+<p>In this tutorial we illustrate the effectiveness of the PSY procedure in detecting bubbles with an applications to the S&amp;P 500 financial market using R and the <em>psymonitor</em> package.</p>
+</div>
+
+</div>
+
+
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<p>Before beginning the tutorial, make sure that you have all the necessary packages. Try running the cell below and, if any issues arise, follow the instructions within.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">eval =</span> <span class="ot">FALSE</span>, <span class="dt">echo =</span> <span class="ot">TRUE</span>, <span class="dt">warning =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">                      <span class="dt">message =</span> <span class="ot">FALSE</span>, <span class="dt">comment =</span> <span class="ot">NA</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># CRAN Packages </span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># -------------</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># If any of these packages are not installed, write</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># install.packages(&quot;&lt;name of package&gt;&quot;)</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co"># e.g., install.packages(&quot;MultipleBubbles&quot;)</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">library</span>(psymonitor)  <span class="co"># For testting for bubble monitoring</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">library</span>(ggplot2)     <span class="co"># To handle plots</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw">library</span>(knitr)       <span class="co"># for nice looking tables</span></a></code></pre></div>
+</div>
+<div id="the-data" class="section level2">
+<h2>The Data</h2>
+<p>The S&amp;P 500 stock market has been a central focus of attention in global financial markets due to the size of this market and its impact on other financial markets. As an illustration of the methods discussed in this chapter, we conduct a pseudo real-time monitoring exercise for bubbles and crises in this market with the PSY strategy. The sample period runs from January 1973 to July 2018, downloaded monthly from <em>Datastream International</em>. The price-dividend ratio is computed as the inverse of dividend yields. The first step is to import the data to R, using the following code:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span>(snp)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">snp<span class="op">$</span>pd &lt;-<span class="st">  </span><span class="dv">1</span><span class="op">/</span>snp<span class="op">$</span>value</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">head</span>(snp)</a></code></pre></div>
+<p>In the presence of a speculative bubble, asset prices characteristically deviate in an explosive way from fundamentals, representing exuberance in the speculative behavior driving the market. In the present case, this deviation implies that the log price-dividend ratio is expected to follow an explosive process over the expansive phase of the bubble. But during crisis periods, the price-dividend ratio is expected to follow a random (downward) drift martingale process, in contrast to a small (local to zero) constant drift martingale process that typically applies under normal market conditions. According to the theory detailed in Section 3 and 4, we expect to witness rejection of the null hypothesis in the PSY test empirical outcomes during both bubble and crisis periods.</p>
+<p>Figure 1 plots the price-to-dividend ratio of the S&amp;P 500 index. We observe a dramatic increase in the data series in the late 1990s, followed by a rapid fall in the early 2000s. The market experienced another episode of slump in late 2008.</p>
+</div>
+<div id="real-time-monitoring" class="section level2">
+<h2>Real-Time Monitoring</h2>
+<p>With a training period of 47 observations, we start the pseudo real-time monitoring exercise from November 1976 onwards. The PSY test statistics are compared with the 95% bootstrapped critical value. The empirical size is controlled over a two-year period, i.e., by taking <span class="math inline">\(Tb = 24\)</span>. The lag order is selected by BIC with a maximum lag order of 6, applied to each subsample. The PSY statistic sequence and the corresponding bootstrap critical values can be calculated as follows in R:</p>
+<p>First, we define the series and parameters that are used as inputs for the test procedure:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">y        &lt;-<span class="st"> </span>snp<span class="op">$</span>pd</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">obs      &lt;-<span class="st"> </span><span class="kw">length</span>(y)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">r0       &lt;-<span class="st"> </span><span class="fl">0.01</span> <span class="op">+</span><span class="st"> </span><span class="fl">1.8</span><span class="op">/</span><span class="kw">sqrt</span>(obs)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">swindow0 &lt;-<span class="st"> </span><span class="kw">floor</span>(r0<span class="op">*</span>obs)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">dim      &lt;-<span class="st"> </span>obs <span class="op">-</span><span class="st"> </span>swindow0 <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">IC       &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">adflag   &lt;-<span class="st"> </span><span class="dv">6</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">yr       &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">Tb       &lt;-<span class="st"> </span><span class="dv">12</span><span class="op">*</span>yr <span class="op">+</span><span class="st"> </span>swindow0 <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">nboot    &lt;-<span class="st"> </span><span class="dv">99</span></a></code></pre></div>
+<p>Next, we run the test and simulate critical values via the bootstrap.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">bsadf          &lt;-<span class="st"> </span><span class="kw">PSY</span>(y, swindow0, IC, adflag)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">quantilesBsadf &lt;-<span class="st"> </span><span class="kw">cvPSYwmboot</span>(y, swindow0, IC, adflag, Tb, nboot, <span class="dt">nCores =</span> <span class="dv">2</span>) <span class="co">#Note that the number of cores is arbitrarily set to 2.</span></a></code></pre></div>
+<p>The identified origination and termination dates can be calculated and viewed with the following commands:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">monitorDates &lt;-<span class="st"> </span>snp<span class="op">$</span>date[swindow0<span class="op">:</span>obs]</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">quantile95   &lt;-<span class="st"> </span>quantilesBsadf <span class="op">%*%</span><span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>, <span class="dt">nrow =</span> <span class="dv">1</span>, <span class="dt">ncol =</span> dim)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">ind95        &lt;-<span class="st"> </span>(bsadf <span class="op">&gt;</span><span class="st"> </span><span class="kw">t</span>(quantile95[<span class="dv">2</span>, ])) <span class="op">*</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">periods      &lt;-<span class="st"> </span><span class="kw">locate</span>(ind95, monitorDates)</a></code></pre></div>
+<p>and printed out using the <em>disp</em> function</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">bubbleDates &lt;-<span class="st"> </span><span class="kw">disp</span>(periods, obs)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">kable</span>(bubbleDates, <span class="dt">caption =</span> <span class="st">&quot;Bubble and Crisis Periods in the S&amp;P 500&quot;</span>)</a></code></pre></div>
+<p>Identified periods that last more than a month are shaded in Figure 2. As is evident in the figure, the procedure detects two bubble episode and one crisis episode. The first bubble episode only lasts for two months (1986M06 and 1987M08) and occurred before the Black Monday crash on October 1987. The second bubble episode is the well-known dot-com bubble, starting from January 1996 and terminating in October 2000 (with several breaks in between). For the dot-com bubble episode the identified starting date for market exuberance occurs well before the speech of the former chairman of the Federal Reserve Bank Alan Greenspan in December 1996 where the now famous question `how do we know when irrational exuberance has unduly escalated asset values’ was posed to the audience and financial world. The identified subprime mortgage crisis starts in October 2008, which is one month after the collapse of Lehman Brothers, and terminates in February 2009.</p>
+<p>The codes for generating the plot and shaded overlays in the figure are as follows:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_rect</span>(<span class="dt">data =</span> bubbleDates, <span class="kw">aes</span>(<span class="dt">xmin =</span> start, <span class="dt">xmax =</span> end, </a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">                              <span class="dt">ymin =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">ymax =</span> <span class="ot">Inf</span>), <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">data =</span> snp, <span class="kw">aes</span>(date, pd)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Figure 2: S&amp;P 500 Price-to-Dividend Ratio&quot;</span>,</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">       <span class="dt">subtitle =</span> <span class="st">&quot;January 1973 - July 2018&quot;</span>,</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">       <span class="dt">caption =</span> <span class="st">&quot;Notes: The solid</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="st">line is the price-to-dividend ratio and the shaded areas are the periods where</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="st">the PSY statistic exceeds its 95% bootstrapped critical value.&quot;</span>, </a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">       <span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Ratio&quot;</span>) </a></code></pre></div>
+<hr />
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ul>
+<li>Phillips, P. C. B., &amp; Shi, S.(2017). Detecting financial collapse and ballooning sovereign risk. Cowles Foundation Discussion Paper No. 2110.</li>
+<li>Phillips, P. C. B., &amp; Shi, S.(forthcoming). Real time monitoring of asset markets: Bubbles and crisis. In Hrishikesh D. Vinod and C.R. Rao (Eds.), <em>Handbook of Statistics Volume 41 - Econometrics Using R</em>.</li>
+<li>Phillips, P. C. B., Shi, S., &amp; Yu, J. (2015a). Testing for multiple bubbles: Historical episodes of exuberance and collapse in the S&amp;P 500. <em>International Economic Review</em>, 56(4), 1034–1078.</li>
+<li>Phillips, P. C. B., Shi, S., &amp; Yu, J. (2015b). Testing for multiple bubbles: Limit Theory for Real-Time Detectors. <em>International Economic Review</em>, 56(4), 1079–1134.</li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
